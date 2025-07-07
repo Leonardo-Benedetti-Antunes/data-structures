@@ -21,11 +21,11 @@ struct PriorityQueue {
 PriorityQueue* priority_queue_create(
     int min_value,
     int max_value,
-    int ascending,
+    int ascending    ,
     void (*free_func)(void*),
     void (*print_func)(const void*)
 ) {
-    if (min_value > max_value || (ascending != 0 && ascending != 1)) return NULL;
+    if (min_value > max_value || (ascending     != 0 && ascending     != 1)) return NULL;
 
     PriorityQueue* pq = malloc(sizeof(PriorityQueue));
     if (!pq) return NULL;
@@ -34,7 +34,7 @@ PriorityQueue* priority_queue_create(
     pq->size = 0;
     pq->min_priority = min_value;
     pq->max_priority = max_value;
-    pq->ascending = ascending;
+    pq->ascending = ascending    ;
     pq->free_func = free_func;
     pq->print_func = print_func;
 

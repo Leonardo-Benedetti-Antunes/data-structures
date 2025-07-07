@@ -1,23 +1,27 @@
+# Generic Linked Lists and Queues in C
 
-# Generic Linked Lists in C
-
-This project provides a generic implementation of singly and doubly linked lists in the C programming language. It supports storage of any data type through the use of void pointers and user-defined callback functions for memory management, comparison, and printing.
+This project provides a generic implementation of singly and doubly linked lists, as well as FIFO and priority queues in the C programming language. It supports storage of any data type through the use of void pointers and user-defined callback functions for memory management, comparison, and printing.
 
 ## Project Structure
 
 - `singly_linked_list.h/.c`: Implementation of **singly linked list**.
 - `doubly_linked_list.h/.c`: Implementation of **doubly linked list**.
+- `queue.h/.c`: Implementation of **FIFO queue** using linked list.
+- `priority_queue.h/.c`: Implementation of **priority queue** using linked list.
 - `common_callbacks.h/.c`: Utility callback functions for primitive types (int, float, etc.).
 - `singly_linked_list_factory.h/.c`: Factory functions for singly linked lists using predefined callbacks.
 - `doubly_linked_list_factory.h/.c`: Factory functions for doubly linked lists using predefined callbacks.
+- `queue_factory.h/.c`: Factory functions for queues using predefined callbacks.
+- `priority_queue_factory.h/.c`: Factory functions for priority queues using predefined callbacks.
 
 ---
 
 ## Compilation
 
 ```bash
-gcc -o main main.c singly_linked_list.c doubly_linked_list.c \
-    singly_linked_list_factory.c doubly_linked_list_factory.c common_callbacks.c
+gcc -o main main.c singly_linked_list.c doubly_linked_list.c queue.c priority_queue.c \
+    singly_linked_list_factory.c doubly_linked_list_factory.c \
+    queue_factory.c priority_queue_factory.c common_callbacks.c
 ```
 
 Or compile as a library and include it in your project.
@@ -42,6 +46,50 @@ int main() {
 
     s_linked_list_print(list);
     s_linked_list_destroy(list);
+    return 0;
+}
+```
+
+---
+
+## Usage Example (Queue with `int`)
+
+```c
+#include "queue_factory.h"
+
+int main() {
+    Queue* q = queue_create_int();
+
+    int* a = malloc(sizeof(int)); *a = 5;
+    queue_enqueue(q, a);
+
+    int* b = malloc(sizeof(int)); *b = 10;
+    queue_enqueue(q, b);
+
+    queue_print(q);
+    queue_destroy(q);
+    return 0;
+}
+```
+
+---
+
+## Usage Example (Priority Queue with `int`)
+
+```c
+#include "priority_queue_factory.h"
+
+int main() {
+    PriorityQueue* pq = priority_queue_create_int(0, 100, 1); // ascending order
+
+    int* a = malloc(sizeof(int)); *a = 99;
+    priority_queue_enqueue(pq, a, 3);
+
+    int* b = malloc(sizeof(int)); *b = 77;
+    priority_queue_enqueue(pq, b, 1);
+
+    priority_queue_print(pq);
+    priority_queue_destroy(pq);
     return 0;
 }
 ```
@@ -99,12 +147,16 @@ int main() {
 ```c
 SinglyLinkedList* s_linked_list_create(free_func, cmp_func, print_func);
 DoublyLinkedList* d_linked_list_create(free_func, cmp_func, print_func);
+Queue* queue_create(free_func, print_func);
+PriorityQueue* priority_queue_create(min, max, ascending, free_func, print_func);
 ```
 
 Factory methods:
 ```c
 SinglyLinkedList* s_create_int_list();
 DoublyLinkedList* d_create_float_list();
+Queue* queue_create_int();
+PriorityQueue* priority_queue_create_int(min, max, ascending);
 // Also available: double, char*, long, unsigned int
 ```
 
@@ -114,6 +166,8 @@ void s_linked_list_insert_front(...);
 void s_linked_list_insert_back(...);
 void d_linked_list_insert_front(...);
 void d_linked_list_insert_back(...);
+void queue_enqueue(...);
+void priority_queue_enqueue(...);
 ```
 
 ### Appending Lists
@@ -129,15 +183,22 @@ void d_linked_list_append_back(...);
 int s_linked_list_remove(...);
 size_t s_linked_list_size(...);
 void s_linked_list_print(...);
+void* queue_dequeue(...);
+void* queue_peek(...);
+int queue_is_empty(...);
 
-// Equivalent functions for doubly linked lists are also available.
+void* priority_queue_dequeue(...);
+void* priority_queue_peek(...);
+int priority_queue_is_empty(...);
+
+// Equivalent functions for doubly linked lists and queues are also available.
 ```
 
 ---
 
 ## Custom Callbacks
 
-You may define your own comparison, printing, and freeing functions and provide them during list creation.
+You may define your own comparison, printing, and freeing functions and provide them during list or queue creation.
 
 Example:
 ```c
@@ -145,7 +206,8 @@ int cmp_my_type(const void* a, const void* b) { ... }
 void print_my_type(const void* data) { ... }
 void free_my_type(void* data) { ... }
 
-SinglyLinkedList* list = s_linked_list_create(free_my_type, cmp_my_type, print_my_type);
+Queue* q = queue_create(free_my_type, print_my_type);
+PriorityQueue* pq = priority_queue_create(0, 10, 1, free_my_type, print_my_type);
 ```
 
 ---
